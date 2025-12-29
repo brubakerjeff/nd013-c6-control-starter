@@ -21,8 +21,8 @@ void PID::Init(double Kpi, double Kii, double Kdi, double output_lim_maxi, doubl
    **/
    _Kpi = Kpi;
    _Kii = Kii;
-   _Kdi = kdi;
-   _output_lim_max = output_lim_maxi;
+   _Kdi = Kdi;
+   _output_lim_maxi = output_lim_maxi;
    _output_lim_mini = output_lim_mini;
   p_error = 0.0;
   i_error = 0.0;
@@ -35,9 +35,9 @@ void PID::UpdateError(double cte) {
    /**
    * TODO: Update PID errors based on cte.
    **/
-  d_error = _Kd * (cte - this->cte)/_delta_time;
-  p_error = _Kp * cte;
-  i_error += _Ki * cte * _delta_time;
+  d_error = _Kdi * (cte - this->cte)/_delta_time;
+  p_error = _Kpi * cte;
+  i_error += _Kpi * cte * _delta_time;
   this->cte = cte;
 }
 
@@ -47,10 +47,10 @@ double PID::TotalError() {
     * The code should return a value in the interval [output_lim_mini, output_lim_maxi]
    */
     double control= p_error + i_error + d_error;
-    if(control > output_lim_maxi)
-      control = output_lim_maxi;
+    if(control > _output_lim_maxi)
+      control = _output_lim_maxi;
     else
-      control = output_lim_mini;
+      control = _output_lim_mini;
     return control;
 }
 
@@ -58,5 +58,5 @@ double PID::UpdateDeltaTime(double new_delta_time) {
    /**
    * TODO: Update the delta time with new value
    */
- 	_ddelta_time=new_delta_time;
+ 	_delta_time=new_delta_time;
 }
