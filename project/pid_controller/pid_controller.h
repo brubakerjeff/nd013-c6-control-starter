@@ -21,14 +21,14 @@ public:
     /*
     * Coefficients
     */
-    double Kpi;
-    double Kii;
-    double Kdi;
+    double _Kpi;
+    double _Kii;
+    double _Kdi;
     /*
     * Output limits
     */
-    double output_lim_maxi;
-    double output_lim_mini;
+    double _output_lim_maxi;
+    double _output_lim_mini;
     /*
     * Delta time
     */
