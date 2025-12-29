@@ -17,7 +17,11 @@ public:
     /*
     * Errors
     */
-
+    double cte;
+    
+    double p_error;
+ 	double i_error;
+  	double d_error;
     /*
     * Coefficients
     */
@@ -32,7 +36,7 @@ public:
     /*
     * Delta time
     */
-
+  	double _delta_time;
     /*
     * Constructor
     */
