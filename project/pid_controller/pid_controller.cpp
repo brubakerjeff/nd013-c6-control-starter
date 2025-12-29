@@ -19,6 +19,11 @@ void PID::Init(double Kpi, double Kii, double Kdi, double output_lim_maxi, doubl
    /**
    * TODO: Initialize PID coefficients (and errors, if needed)
    **/
+   _Kpi = Kpi;
+   _Kii = Kii;
+   _Kdi = kdi;
+   _output_lim_max = output_lim_maxi;
+   _output_lim_mini = output_lim_mini;
 }
 
 
