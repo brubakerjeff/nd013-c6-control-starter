@@ -358,7 +358,7 @@ int main ()
           * TODO (step 2): compute the throttle error (error_throttle) from the position and the desired speed
           **/
           // modify the following line for step 2
-          error_throttle = 0.2;
+          error_throttle = v_points[index_shortest] - velocity;
 
 
 
