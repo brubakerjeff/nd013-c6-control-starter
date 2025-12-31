@@ -301,37 +301,17 @@ int main ()
 
           double steer_output;
 
-	          double actual_yaw = yaw;
-	          while(actual_yaw > M_PI) {
-	             if(actual_yaw > M_PI) {
-	            	actual_yaw -= 2*M_PI;
-	          	}else {
-	            	actual_yaw += 2*M_PI;
-	          	}         
-	          }
-	          
-	         cout << "x_position" << x_position << endl;
-	         cout << "y_position" << y_position << endl;
-	         cout << "waypoint x" << waypoint_x << endl;
-	         cout << "waypoint y" << waypoint_y << endl;
-	          
-	         double desired_yaw=angle_between_points(x_position,y_position,waypoint_x,waypoint_y);
-	          
-	                 
-	         while(desired_yaw > M_PI) {
-	             if(desired_yaw > M_PI) {
-	            	desired_yaw -= 2*M_PI;
-	          	}else {
-	            	desired_yaw += 2*M_PI;
-	          	}         
-	          }
-	          cout << " angle" << desired_yaw <<endl;
-	        
-	          
-	         error_steer = desired_yaw - actual_yaw;
-          pid_steer.UpdateError(error_steer);
-          steer_output = pid_steer.TotalError();
-          
+          /**
+          * TODO (step 3): compute the steer error (error_steer) from the position and the desired trajectory
+          **/
+           error_steer = 0.3;
+
+          /**
+          * TODO (step 3): uncomment these lines
+          **/
+//           // Compute control to apply
+             pid_steer.UpdateError(error_steer);
+             steer_output = pid_steer.TotalError();
 
 //           // Save data
              file_steer.seekg(std::ios::beg);
