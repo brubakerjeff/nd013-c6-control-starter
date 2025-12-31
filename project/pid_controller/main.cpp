@@ -1,4 +1,3 @@
-/**********************************************
  * Self-Driving Car Nano-degree - Udacity
  *  Created on: September 20, 2020
  *      Author: Munir Jojo-Verge
@@ -196,26 +195,6 @@ void set_obst(vector<double> x_points, vector<double> y_points, vector<State>& o
 }
 
 
-int get_index_shortest_distance(vector<double> x_pts, vector<double> y_pts, double x_pos, double y_pos){
-  int index = 0;
-  double dist_min;       
-  for(int i=0; i<x_pts.size(); i++){
-    //calc distance between planner points and vehicle position
-    double distance = pow((x_pos - x_pts[i]), 2) + pow((y_pos - y_pts[i]), 2);
-
-    if(i == 0){
-      dist_min = distance;
-    }
-    else{
-      // Check if new dist is less than existing min distance
-      if(distance < dist_min){
-        index = i;
-        dist_min = distance;
-      }
-    }
-  }
-  return index;
-}
 int main ()
 {
   cout << "starting server" << endl;
@@ -237,22 +216,20 @@ int main ()
 
   // initialize pid steer
   /**
-  * TODO (Step 1): create pid (pid_steer) for steer command and initialize values
+  * TODO  (Step 1): create pid (pid_steer) for steer command and initialize values
   **/
-
-
+  PID pid_steer = PID();
+  //pid_steer.Init(0.299, 0.01, 0.399, 1.2, -1.2);
+  pid_steer.Init(0.1, 0.01, 0.1, 1.2, -1.2);
   // initialize pid throttle
   /**
   * TODO (Step 1): create pid (pid_throttle) for throttle command and initialize values
   **/
 
-  PID pid_steer = PID();
-  // Kpi, double Kii, double Kdi, double output_lim_maxi, double output_lim_mini
-  pid_steer.Init(0.1, 0.01, 0.08, 1.2, -1.2);
- 
   PID pid_throttle = PID();
-  pid_throttle.Init(0.149, 0.009, 0.199, 1.2, -1.2);
-
+  
+  pid_throttle.Init(0.1, 0.01, 0.1, 1, -1);
+  
   h.onMessage([&pid_steer, &pid_throttle, &new_delta_time, &timer, &prev_timer, &i, &prev_timer](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode)
   {
         auto s = hasData(data);
@@ -301,6 +278,11 @@ int main ()
 
           path_planner(x_points, y_points, v_points, yaw, velocity, goal, is_junction, tl_state, spirals_x, spirals_y, spirals_v, best_spirals);
 
+          for(int i=0;i<x_points.size();i++) {
+            cout << "x[" << i<< ": " << x_points[i] << endl;
+            cout << "y[" << i<< ": " << y_points[i] << endl;
+
+          }
           // Save time and compute delta time
           time(&timer);
           new_delta_time = difftime(timer, prev_timer);
@@ -318,51 +300,57 @@ int main ()
 
           // Compute steer error
           double error_steer;
-		  int shortestindex =	get_index_shortest_distance(x_points, y_points, x_position, y_position);
 
 
           double steer_output;
 
-	          double actual_yaw = yaw;
-	          while(actual_yaw > M_PI) {
-	             if(actual_yaw > M_PI) {
-	            	actual_yaw -= 2*M_PI;
-	          	}else {
-	            	actual_yaw += 2*M_PI;
-	          	}         
-	          }
-	          
-	         cout << "x_position" << x_position << endl;
-	         cout << "y_position" << y_position << endl;
-	         cout << "waypoint x" << waypoint_x << endl;
-	         cout << "waypoint y" << waypoint_y << endl;
-	          
-	         double desired_yaw=angle_between_points(x_position,y_position,waypoint_x,waypoint_y);
-	          
-	                 
-	         while(desired_yaw > M_PI) {
-	             if(desired_yaw > M_PI) {
-	            	desired_yaw -= 2*M_PI;
-	          	}else {
-	            	desired_yaw += 2*M_PI;
-	          	}         
-	          }
-	          cout << " angle" << desired_yaw <<endl;
-	        
-	          
-	         error_steer = desired_yaw - actual_yaw;
+          /**
+          * TODO (step 3): compute the steer error (error_steer) from the position and the desired trajectory
+          **/
+          error_steer = 0;
+          double actual_yaw = yaw;
+          while(actual_yaw > M_PI) {
+             if(actual_yaw > M_PI) {
+            	actual_yaw -= 2*M_PI;
+          	}else {
+            	actual_yaw += 2*M_PI;
+          	}         
+          }
+          
+         cout << "x_position" << x_position << endl;
+         cout << "y_position" << y_position << endl;
+         cout << "waypoint x" << waypoint_x << endl;
+         cout << "waypoint y" << waypoint_y << endl;
+          
+         double desired_yaw=angle_between_points(x_position,y_position,waypoint_x,waypoint_y);
+          
+                 
+         while(desired_yaw > M_PI) {
+             if(desired_yaw > M_PI) {
+            	desired_yaw -= 2*M_PI;
+          	}else {
+            	desired_yaw += 2*M_PI;
+          	}         
+          }
+          cout << " angle" << desired_yaw <<endl;
+        
+          
+         error_steer = desired_yaw - actual_yaw;
+          /**
+          * TODO (step 3): uncomment these lines
+          **/
+//           // Compute control to apply
           pid_steer.UpdateError(error_steer);
           steer_output = pid_steer.TotalError();
-          
 
 //           // Save data
-             file_steer.seekg(std::ios::beg);
-             for(int j=0; j < i - 1; ++j) {
-                 file_steer.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-             }
-             file_steer  << i ;
-             file_steer  << " " << error_steer;
-             file_steer  << " " << steer_output << endl;
+          file_steer.seekg(std::ios::beg);
+          for(int j=0; j < i - 1; ++j) {
+              file_steer.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+          }
+          file_steer  << i ;
+          file_steer  << " " << error_steer;
+          file_steer  << " " << steer_output << endl;
 
           ////////////////////////////////////////
           // Throttle control
@@ -372,7 +360,7 @@ int main ()
           * TODO (step 2): uncomment these lines
           **/
 //           // Update the delta time with the previous command
-           pid_throttle.UpdateDeltaTime(new_delta_time);
+          pid_throttle.UpdateDeltaTime(new_delta_time);
 
           // Compute error of speed
           double error_throttle;
@@ -380,7 +368,9 @@ int main ()
           * TODO (step 2): compute the throttle error (error_throttle) from the position and the desired speed
           **/
           // modify the following line for step 2
-          error_throttle = v_points[shortestindex] - velocity;
+          double current_velocity = velocity;
+          double expected_velocity = v_points[v_points.size()-1];
+          error_throttle = expected_velocity - current_velocity;
 
 
 
@@ -391,27 +381,27 @@ int main ()
           * TODO (step 2): uncomment these lines
           **/
 //           // Compute control to apply
-           pid_throttle.UpdateError(error_throttle);
-           double throttle = pid_throttle.TotalError();
+          pid_throttle.UpdateError(error_throttle);
+          double throttle = pid_throttle.TotalError();
 
 //           // Adapt the negative throttle to break
-           if (throttle > 0.0) {
-             throttle_output = throttle;
-             brake_output = 0;
-           } else {
-             throttle_output = 0;
-             brake_output = -throttle;
-           }
+          if (throttle > 0.0) {
+            throttle_output = throttle;
+            brake_output = 0;
+          } else {
+            throttle_output = 0;
+            brake_output = -throttle;
+          }
 
 //           // Save data
-           file_throttle.seekg(std::ios::beg);
-           for(int j=0; j < i - 1; ++j){
-               file_throttle.ignore(std::numeric_limits<std::streamsize>::max(),'\n');
-           }
-           file_throttle  << i ;
-           file_throttle  << " " << error_throttle;
-           file_throttle  << " " << brake_output;
-           file_throttle  << " " << throttle_output << endl;
+          file_throttle.seekg(std::ios::beg);
+          for(int j=0; j < i - 1; ++j){
+              file_throttle.ignore(std::numeric_limits<std::streamsize>::max(),'\n');
+          }
+          file_throttle  << i ;
+          file_throttle  << " " << error_throttle;
+          file_throttle  << " " << brake_output;
+          file_throttle  << " " << throttle_output << endl;
 
 
           // Send control

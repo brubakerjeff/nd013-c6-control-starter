@@ -1,3 +1,4 @@
+
 /**********************************************
  * Self-Driving Car Nano-degree - Udacity
  *  Created on: December 11, 2020
@@ -25,18 +26,20 @@ public:
     /*
     * Coefficients
     */
-    double _Kpi;
-    double _Kii;
-    double _Kdi;
+ 	double Kp;
+  	double Ki;
+  	double Kd;
+
     /*
     * Output limits
     */
-    double _output_lim_maxi;
-    double _output_lim_mini;
+    double output_lim_maxi;
+    double output_lim_mini;
     /*
     * Delta time
     */
-  	double _delta_time;
+  	double delta_time;
+    
     /*
     * Constructor
     */
@@ -69,5 +72,3 @@ public:
 };
 
 #endif //PID_CONTROLLER_H
-
-
