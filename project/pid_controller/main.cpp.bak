@@ -248,7 +248,7 @@ int main ()
 
   PID pid_steer = PID();
   // Kpi, double Kii, double Kdi, double output_lim_maxi, double output_lim_mini
-  pid_steer.Init(0.289, 0.009, 0.0.8, 1.0, -1.0);
+  pid_steer.Init(0.289, 0.009, 0.08, 1.0, -1.0);
  
   PID pid_throttle = PID();
   pid_throttle.Init(0.249, 0.009, 0.199, 1.2, -1.2);
